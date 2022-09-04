@@ -6,8 +6,14 @@
 let lala:string = 'sun';
 lala = 'ii';
 
+// 数组
 const arr: number[] = [9, 8];
 const arrDemo: Array<string> = ['99', 'kk'];
+const arrdemoOne: (number | string)[] = ['fdf', 9];
+const arrdemoTwo: {name: string, age: number}[] = [{name: 'aaa', age: 999}];
+
+// 元组tuple
+const arrtuple: [string, string, number] = ['liming', 'boy', 19];
 
 // 参数类型，函数类型
 const showMessage = (age: number): number => age;
@@ -26,6 +32,18 @@ interface StudentNew extends Student {
     name?: string; // 可有可无
 }
 const liming: StudentNew = {age: 12, sex: 'boy', name: 'liming'}
+
+// 多个对象类型同时继承
+interface Circle {
+    radius: number
+}
+interface Color {
+    color: string
+}
+
+interface CricleOrColor extends Circle, Color {};
+
+const circleColor: CricleOrColor = {radius: 333, color: 'red'};
 
 // 类型别名type
 type User = {
@@ -131,6 +149,65 @@ interface CallOrConstruct {
     new (s: string): Date;
     (n?: number): number
 }
+
+// 7、对象类型只读属性
+interface Person {
+    readonly name: string,
+    age: number
+}
+const sun: Person = {
+    name: 'lalal',
+    age: 44
+}
+sun.name = 'lll';
+
+// 8、对象属性扩展类型
+interface PersonDemo {
+    name: string,
+    [key: string]: number | string // key值匹配+联合类型
+}
+const zhao: PersonDemo = {
+    name: 'alala',
+    age: 44
+}
+
+// 9、字面量对象和直接对象类型注解的区别
+interface PersonDemoOne {
+    name: string;
+    age?: number
+};
+
+const getPerson = (person: PersonDemoOne) => {
+    console.log(person.name);
+}
+
+const personParam = {
+    name: 'lalal',
+    sex: 'boy'
+}
+
+// 字面量的形式：只要其中有接口声明的类型即可，可以多处一部分属性，也不会提示报错
+getPerson(personParam);
+getPerson({
+    name: 'xiaohai',
+    sex: 'girl' // 回进行强校验，字段类型必须都能匹配上
+})
+
+// 10、class类应用接口
+interface PersonDemoTwo {
+    name: string;
+    age?: number;
+    say(): string
+};
+// 类中需要有接口中声明的必须数据
+class PersonDemoThird implements PersonDemoTwo {
+    name = 'lisi';
+    say() {
+        return 'lala'
+    }
+}
+
+
 
 
 /*********************Narrowing******************************* */
