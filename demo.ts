@@ -308,3 +308,62 @@ const d1 = makeDate(12345678);
 const d2 = makeDate(5, 5, 5);
 const d3 = makeDate(1, 3); // No overload expects 2 arguments, but overloads do exist that expect either 1 or 3 arguments.
 
+/********************* 类的定义与继承 ******************************* */
+//1、private， public, protected
+// private: 只允许在类的内部被调用
+// public: 允许在类的内部和外部调用（未明确定义时，默认的就是public类型）
+// protected: 在类的内部，以及继承的子类中可以调用
+class Children {
+    private name: string;
+    protected age: number;
+    say() {
+        this.name = 'iii';
+        this.age = 888;
+        console.log('hi');
+    }
+}
+const children = new Children();
+// Property 'name' is private and only accessible within class 'Children'.
+children.name = 'zhangsan';
+children.age = 999;
+// 继承的子类
+class BigChild extends Children {
+    bye() {
+        this.name='byg';
+        this.age = 7777; // protected定义的类型值可以在继承的子类中使用
+    }
+}
+
+// 2、constructor
+class ChildrenOne {
+    // 传统写法
+    // name: string;
+    // constructor(name: string) {
+    //     this.name = name;
+    // }
+    // 简化写法: 在构造函数的参数上使用public等同于创建了同名的成员变量。
+    constructor(public name: string){};
+}
+const childrenone = new ChildrenOne('kakak');
+console.log(childrenone.name);
+
+// 3、父类定义的有constructor方法，子类中也定的有，如何处理？
+class ChildrenTwo {
+    constructor(public name: string){};
+}
+class ChildrenThree extends ChildrenTwo {
+    constructor(public age: number) {
+        super('wangwu'); //需要明确调用super;
+    }
+}
+const childrenthree = new ChildrenThree(56);
+
+// 4、父类定义的没有constructor方法，子类中定义的有，也需要在constructor中调用super()，如何处理？
+class ChildrenFour {
+}
+class ChildrenSix extends ChildrenFour {
+    constructor(public age: number) {
+        super(); //需要明确调用super;
+    }
+}
+const Childrensix = new ChildrenSix(56);
