@@ -136,7 +136,7 @@ const constructorDemo = (ctor: ClassWithConstructor) => {
 
 class ctorCl {
     name: string;
-    constructor(str: sting) {
+    constructor(str: string) {
         this.name = str;
     }
 }
@@ -367,3 +367,28 @@ class ChildrenSix extends ChildrenFour {
     }
 }
 const Childrensix = new ChildrenSix(56);
+
+// 5、类的setter， getter用法
+class Animal {
+    constructor(private name: string){};
+}
+const animal = new Animal('dog');
+// Property 'name' is private and only accessible within class 'Animal'.
+console.log(animal.name);
+
+// 利用setter、getter可以对私有属性进行取值和改写
+class AnimalDemo {
+    constructor(private _name: string){};
+    // 访问器仅在针对ECMAScript 5及更高版本时可用。在tsconfig中进行配置。
+    get name() {
+        return this._name;
+    }
+    set name(name: string) {
+        this._name = 'kaka' + name;
+    }
+}
+const animaldemo = new AnimalDemo('dog');
+// Property 'name' is private and only accessible within class 'Animal'.
+console.log(animaldemo.name);
+animaldemo.name = 'cat';
+
