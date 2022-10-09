@@ -1,9 +1,19 @@
 import superagent from 'superagent';
 import cheerio from 'cheerio';
+import fs from 'fs';
+import path from 'path';
 
 interface Course{
     title: string,
     count: number
+}
+interface CourseResult{
+    time: number,
+    data: Course[]
+}
+
+interface FileContent{
+    [key: number]: Course[]
 }
 
 class Crowller {
@@ -27,17 +37,38 @@ class Crowller {
             time: new Date().getTime(),
             data: courseInfo
         };
+        return result;
     }
 
     async getRowHtml() {
         const data = await superagent.get(this.url);
-        this.getCourseInfo(data.text);
+        return data.text;
+    }
+
+    // 将获取到的爬虫数据写入文件
+    generateJsonContent(courseResult: CourseResult) {
+        const filePath = path.resolve(__dirname, '../data/course.json');
+        let fileContent: FileContent = {};
+        if(fs.existsSync(filePath)) {
+            fileContent = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        }
+        fileContent[courseResult.time] = courseResult.data;
+        fs.writeFileSync(filePath, JSON.stringify(fileContent));
+    }
+
+    async initSpiderProcess() {
+        // 爬取原始数据
+        const html = await this.getRowHtml();
+        // 提取想要的数据
+        const courseResult: CourseResult = this.getCourseInfo(html);
+        // 数据存储处理
+        this.generateJsonContent(courseResult);
     }
 
     constructor() {
-        this.getRowHtml();
+        this.initSpiderProcess();
     }
 
 }
 
-const crowller = new Crowller();
+new Crowller();
