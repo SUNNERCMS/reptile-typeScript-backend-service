@@ -5,16 +5,16 @@ import path from 'path';
 
 
 class Crowller {
-    public filePath = path.resolve(__dirname, '../data/course.json');
+    private filePath = path.resolve(__dirname, '../data/course.json');
 
     // superagent获取页面数据
-    async getRowHtml() {
+    private async getRowHtml() {
         const data = await superagent.get(this.url);
         return data.text;
     }
 
     // 爬虫类处理整体流程方法
-    async initSpiderProcess() {
+    private async initSpiderProcess() {
         // 爬取原始数据
         const html = await this.getRowHtml();
         // 通过专门的分析器进行数据处理
@@ -32,5 +32,5 @@ class Crowller {
 const key = 'x3b174jsx';
 const url = `http://www.dell-lee.com/typescript/demo.html?secret=${key}`;
 
-const analyer = new Analyer();
+const analyer = Analyer.getInstance();
 new Crowller(analyer, url);

@@ -21,6 +21,14 @@ export interface AnalyerType{
 }
 
 export default class Analyer implements AnalyerType {
+    private static instance: Analyer;
+    // 单例模式: static定义静态方法，不能在类的实例上调用静态方法，而应该通过类本身调用
+    static getInstance() {
+        if(!Analyer.instance) {
+            Analyer.instance = new Analyer();
+        }
+        return Analyer.instance;
+    }
     // 从html中爬取需要的数据
     private getCourseInfo(html: string) {
         const $ = cheerio.load(html);
@@ -58,6 +66,9 @@ export default class Analyer implements AnalyerType {
         const courseResult: CourseResult = this.getCourseInfo(html);
         // 生成需要存储的数据格式
         return this.generateJsonContent(courseResult, filePath);
-    }  
+    }
+
+    // 单例模式：私有化constructor，实例化类只能在类内部进行，外部想获取实例可以通过类方法获取
+    private constructor() {}
 
 }

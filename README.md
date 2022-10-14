@@ -57,4 +57,35 @@ export default class Analyer implements AnalyerType {
         this.initSpiderProcess();
     }
 ```
+## v3: 分析器单例模式优化
+1、构造函数私有化。
+> 避免外部进行实例化，是否有实例的判断做到类里面   
+```js
+    // 单例模式：私有化constructor，实例化类只能在类内部进行，外部想获取实例可以通过类方法获取
+    private constructor() {}
+```
+
+
+2、静态方法定义实例获取。
+> 通过类方法进行实例的获取，一般都是在实例上调用方法，由于类的实例在类中进行，外部没法通过实例获取类定义的方法，但静态类型定义的方法，可以通过类获取到。即：static定义静态方法，不能在类的实例上调用静态方法，而应该通过类本身调用   
+```js
+    private static instance: Analyer;
+    // 单例模式: static定义静态方法，不能在类的实例上调用静态方法，而应该通过类本身调用
+    static getInstance() {
+        if(!Analyer.instance) {
+            Analyer.instance = new Analyer();
+        }
+        return Analyer.instance;
+    }
+```
+
+3、外部使用实例。
+> 外部通过静态方法获取实例，保证实例的唯一性。   
+```js
+const analyer = Analyer.getInstance();
+...
+// 通过专门的分析器进行数据处理
+const storeData = this.analyer.analyer(html, this.filePath);
+```
+
 
