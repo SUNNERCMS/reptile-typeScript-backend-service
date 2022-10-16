@@ -87,5 +87,37 @@ const analyer = Analyer.getInstance();
 // 通过专门的分析器进行数据处理
 const storeData = this.analyer.analyer(html, this.filePath);
 ```
+## v4: 完善ts开发编辑过程
+```js
+  "scripts": {
+    "dev": "ts-node ./src/crowller.ts",
+    "build": "tsc -w",
+    "start": "nodemon ./build/crowller.js"
+  },
+```
+1、`npm run dev`: 利用ts-node现将ts进行了js编译，然后进行了执行。   
+2、`npm run build`: 执行完之后，会将所有的ts文件进行js编译，但生成的js文件和ts文件时混在一起的，可以利用tsconfig.json进行产出文件配置。 -w:会自动监听ts文件的变化，进行js的重新编译。  
+> "outDir": "./build", 该配置可指定路径和文件名，且生成的js文件会按照ts的目录层级对应生成。  
+3、`npm run start`: 执行之后，会先用node执行一遍./build/crowller.js，然后监听该文件的变化，只要有变化就会重新执行。  
+
+命令2和命令3同时启动，改变ts文件变化后，就可以直接执行js。（1）一个监听ts文件变化，更新js，一个监听js文件变化，执行js文件。
+> 前端工程化并行解决方案： concurrently
+
+##### 借助一些工具提高ts开发编译的效率：  
+1、nodeman: nodemon 是一种工具，可在检测到目录中的文件更改时通过自动重新启动节点应用程序来帮助开发基于 node.js 的应用程序。
+> "start": "nodemon ./build/crowller.js"
+```js
+[nodemon] clean exit - waiting for changes before restart
+[nodemon] restarting due to changes...
+[nodemon] starting `node ./build/crowller.js`
+```
+
+2、concurrently: Run multiple commands concurrently
+```js
+ "dev-build": "tsc -w",
+ "dev-start": "nodemon ./build/crowller.js",
+ "start": "concurrently npm:dev-*"
+```
+> npm run start:即同时运行dev-build和dev-start
 
 

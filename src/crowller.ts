@@ -3,7 +3,6 @@ import fs from 'fs';
 import Analyer, {AnalyerType} from './analyer';
 import path from 'path';
 
-
 class Crowller {
     private filePath = path.resolve(__dirname, '../data/course.json');
 
@@ -32,5 +31,6 @@ class Crowller {
 const key = 'x3b174jsx';
 const url = `http://www.dell-lee.com/typescript/demo.html?secret=${key}`;
 
+// 获取分析器实例
 const analyer = Analyer.getInstance();
 new Crowller(analyer, url);
