@@ -2,6 +2,8 @@
 官方文档：https://www.typescriptlang.org/docs/handbook/2/basic-types.html
 */
 
+import { type } from "os";
+
 /*************************基础类型快速入门***************************** */
 let lala:string = 'sun';
 lala = 'ii';
@@ -212,7 +214,7 @@ class PersonDemoThird implements PersonDemoTwo {
 /*********************Narrowing******************************* */
 // https://www.typescriptlang.org/docs/handbook/2/narrowing.html
 
-// 类型收窄
+// 1、类型收窄
 const upperCase = (content: string | number) => {
     if (typeof content === 'string') {
         return content.toUpperCase();
@@ -220,7 +222,7 @@ const upperCase = (content: string | number) => {
     return content;
 }
 
-// 真值收窄: 判断条件是boolean值
+// 2、真值收窄: 判断条件是boolean值
 const getString = (content?: string) => {
     if (content) {
         return content.toUpperCase();
@@ -228,7 +230,7 @@ const getString = (content?: string) => {
     return content;
 }
 
-// 相等收窄
+// 3、相等收窄
 const example = (x: string | number, y: string | boolean) => {
     // 类型相等为string
     if (x === y) {
@@ -236,7 +238,7 @@ const example = (x: string | number, y: string | boolean) => {
     }
 }
 
-// 使用 in 实现类型收窄
+// 4、使用 in 实现类型收窄
 type Fish = {
     swim: () => {}
 } 
@@ -251,7 +253,7 @@ const test = (animal: Fish | Bird) => {
     return animal.fly;
 }
 
-// instanceof 语法下的类型收窄
+// 5、instanceof 语法下的类型收窄
 const test1 = (params: Date | string) => {
     if(params instanceof Date) {
         return params.getDate();
@@ -260,7 +262,7 @@ const test1 = (params: Date | string) => {
 }
 
 
-//  animal is Fish 类型陈述语法实现类型收窄
+// 6、animal is Fish 类型陈述语法实现类型收窄
 const isFish = (animal: Fish | Bird): animal is Fish => {
     if((animal as Fish).swim !== undefined) {
         return true;
@@ -274,6 +276,17 @@ const test3 = (animal: Fish | Bird) => {
     return animal.fly();
 }
 
+// 7、instanceof 判断基本数据类型的方法-类型收窄进行类型保护
+class NumberObj {
+    count: number
+}
+const traninAnimal03 = (param01: NumberObj | number, param02: NumberObj | number) => {
+    if (param01 instanceof NumberObj && param02 instanceof NumberObj) {
+        return param01.count + param02.count;
+    } else {
+        return 0;
+    }
+}
 /********************* 泛型 ******************************* */
 const getArraFirstItem = <Type>(arr: Type[]) => arr[0];
 
@@ -391,3 +404,88 @@ const animaldemo = new AnimalDemo('dog');
 console.log(animaldemo.name);
 animaldemo.name = 'cat';
 
+/********************* 4-4 Union Types联合类型+类型收窄Narrowing ******************************* */
+interface BigBird {
+    fly: boolean,
+    sing: () => {}
+}
+interface BigDog {
+    fly: boolean,
+    bark: () => {}
+}
+// 1、boolean+类型断言的代码收窄方式进行类型保护
+const traninAnimal = (animal: BigBird | BigDog) => {
+    if (animal.fly) {
+        (animal as BigBird).sing();
+    } else {
+        (animal as BigDog).bark();
+    }
+}
+// 2、in:属性值是否在接口的类型中，收窄进行类型保护
+const traninAnimal01 = (animal: BigBird | BigDog) => {
+    if ('sing' in animal) {
+        animal.sing()
+    } else {
+        animal.bark();
+    }
+}
+// 3、typeof判断属性类型收窄进行类型保护
+const traninAnimal02 = (param01: string | number, param02: string | number) => {
+    if (typeof param01 === 'string' || typeof param02 === 'string') {
+        return `${param01}${param02}`
+    } else {
+        return param01 + param02
+    }
+}
+// 4、instanceof 判断基本数据类型的方法-类型收窄进行类型保护
+class NumberObjType {
+    count: number
+}
+const traninAnimal04 = (param01: NumberObjType | number, param02: NumberObjType | number) => {
+    if (param01 instanceof NumberObjType && param02 instanceof NumberObjType) {
+        return param01.count + param02.count;
+    } else {
+        return 0;
+    }
+}
+
+/********************* 4-5 Enum枚举类型 **********************/
+// typescript支持枚举类型，js没有枚举类型
+// 枚举类型特性：（1）默认下标从0开始映射（2）支持正反向匹配（3）设置映射值后，后续映射值依赖前者定义
+enum status {
+    offline,
+    online,
+    delete
+}
+console.log(status.offline); // 0
+console.log(status.online); // 1
+console.log(status.delete); // 2
+console.log(status[0]) // 'offline'
+
+enum status01 {
+    offline,
+    online = 4,
+    delete
+}
+console.log(status01.offline); // 0
+console.log(status01.online); // 4
+console.log(status01.delete); // 5
+console.log(status01[2]) // 'undefined'
+
+/********************* 4-6 函数泛型 **********************/
+// 泛型：泛指的类型，在定义时不具体指明，在使用时指定
+// 特点：（1）类型注解类型行参和实参（2）支持多个类型
+const generic = <T, P>(params01: T, params02: P) => {
+    return params01 && params02
+}
+// 使用时指明定义
+generic<string, number>('lll', 888);
+// 简写，由参数类型进行推断
+generic('lll', 888);
+
+// params01: Array<T>
+const generic01 = <T>(params01: T[]): T[] => {
+    return params01
+}
+generic01<number>([888]);
+generic01<string>(['hah']);
