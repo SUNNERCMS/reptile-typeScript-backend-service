@@ -1,4 +1,4 @@
-// 专门处理爬虫数据
+// 数据分析器-处理爬虫数据
 import cheerio from 'cheerio';
 import fs from 'fs';
 
@@ -70,5 +70,4 @@ export default class Analyer implements AnalyerType {
 
     // 单例模式：私有化constructor，实例化类只能在类内部进行，外部想获取实例可以通过类方法获取
     private constructor() {}
-
 }

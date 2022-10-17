@@ -3,6 +3,7 @@ import fs from 'fs';
 import Analyer, {AnalyerType} from './analyer';
 import path from 'path';
 
+// 爬虫类
 class Crowller {
     private filePath = path.resolve(__dirname, '../data/course.json');
 
@@ -28,6 +29,7 @@ class Crowller {
     }
 
 }
+// 网页key
 const key = 'x3b174jsx';
 const url = `http://www.dell-lee.com/typescript/demo.html?secret=${key}`;
 
