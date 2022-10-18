@@ -533,3 +533,89 @@ function hello<T>(param: T){
 // 泛型声明了函数hello的类型：要求函数必须是一个接受泛型的函数
 const func: <T>(param: T) => T = hello;
 func<string>('hello');
+
+/********************* 4-8 Namespaces命名空间 **********************/
+// 官方文档： https://www.typescriptlang.org/docs/handbook/namespaces-and-modules.html
+/* 1、Using Namespaces
+（1）Namespaces are simply named JavaScript objects in the global namespace
+namespace只是全局变量中定义命名的js对象。
+（2）they can span multiple files，and can be concatenated using outFile.
+namespace可以贯穿分布在多个文件，也可以使用outFile进行输出的集成。
+（3）you can’t use the outFile option while targeting commonjs or umd, but with TypeScript 1.8 and later, it’s possible to use outFile when targeting amd or system.
+outFile：导出的js文件配置只支持amd和system。
+2、Using Modules
+（1）Modules provide for better code reuse, stronger isolation and better tooling support for bundling.
+module提供了更好的代码复用，代码隔离，以及为bundle提供了更好的工具支持。
+（2）It is also worth noting that, for Node.js applications, modules are the default and we recommended modules over namespaces in modern code.
+还值得注意的是，对于Node.js应用程序来说，模块是默认的，我们在现代代码中推荐模块而不是命名空间。
+（3）Starting with ECMAScript 2015, modules are native part of the language, and should be supported by all compliant engine implementations.
+ Thus, for new projects modules would be the recommended code organization mechanism.
+ 从ECMAScript 2015开始，模块是语言的原生部分，所有兼容的引擎实现都应该支持。因此，对于新项目来说，模块将是推荐的代码组织机制。
+*/
+
+/********************* 4-12 描述文件中的全局类型（.d.ts类型声明文件） **********************/
+// 1、declare声明：.d.ts的顶级声明必须以declare开头
+// 2、以declare声明的变量和模块后，其他地方不需要引入，就可以直接使用了
+// 3、在声明文件中 type 与 interface 也可以不用加declare ，效果相同
+// 相关文档：【ts类型声明文件的正确使用姿势】https://blog.csdn.net/hcz804933522/article/details/104013775
+// 官方相关文档：【Declaration Files】https://www.typescriptlang.org/docs/handbook/declaration-files/by-example.html
+
+//Use declare namespace to describe types or values accessed by dotted notation.（使用声明命名空间来描述通过点分符号访问的类型或值。）
+declare namespace myLib {
+    function makeGreeting(s: string): string;
+    let numberOfGreetings: number;
+}
+
+let result = myLib.makeGreeting("hello, world");
+console.log("The computed greeting is:" + result);
+let count = myLib.numberOfGreetings;
+
+// Use an interface to define a type with properties.（使用接口来定义一个带有属性的类型）
+interface GreetingSettings {
+    greeting: string;
+    duration?: number;
+    color?: string;
+  }
+declare function greet(setting: GreetingSettings): void;
+
+greet({
+    greeting: "hello world",
+    duration: 4000
+});
+
+// You can use a type alias to make a shorthand for a type（可以使用一个类型别名来为一个类型做一个简写）
+type GreetingLike = string | (() => string) | MyGreeter;
+declare function greet(g: GreetingLike): void;
+
+function getGreeting() {
+    return "howdy";
+}
+class MyGreeter extends Greeter {}
+greet("hello");
+greet(getGreeting);
+greet(new MyGreeter());
+
+// Use declare class to describe a class or class-like object. Classes can have properties and methods as well as a constructor.（使用 declare class 来描述类或类对象。类可以具有属性和方法以及构造函数。）
+declare class Greeter {
+    constructor(greeting: string);
+    greeting: string;
+    showGreeting(): void;
+}
+
+const myGreeter = new Greeter("hello, world");
+myGreeter.greeting = "howdy";
+myGreeter.showGreeting();
+class SpecialGreeter extends Greeter {
+constructor() {
+    super("Very special greetings");
+    }
+}
+
+// Use declare var to declare variables. If the variable is read-only, you can use declare const. You can also use declare let if the variable is block-scoped. 
+// （使用 declare var 来声明变量。如果变量是只读的，则可以使用 declare const。如果变量是块范围的，您也可以使用 declare let。）
+declare var foo: number;
+console.log("Half the number of widgets is " + foo / 2);
+
+// Use declare function to declare functions.
+declare function greet(greeting: string): void;
+greet("hello, world");
