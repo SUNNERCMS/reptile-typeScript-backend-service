@@ -489,3 +489,47 @@ const generic01 = <T>(params01: T[]): T[] => {
 }
 generic01<number>([888]);
 generic01<string>(['hah']);
+
+/********************* 4-7 类中的泛型及泛型类型 **********************/
+// (1)使用类时指明泛型（2）泛型可使用继承extends: 要求泛型中必须包含继承者中的内容 (3)用泛型声明类型进行类型注解
+class ClassGeneric<T> {
+    constructor(private data: T){};
+    getItem(index: number): T {
+        return this.data[index];
+    }
+}
+// const classgeneric = new ClassGeneric('hello');
+const classgeneric = new ClassGeneric<string>('hello');
+console.log(classgeneric.getItem(0))
+
+// 使用extends继承，限定或者扩展一些类型注解
+interface Item {
+    name: string
+} 
+class ClassGeneric02<T extends Item> {
+    constructor(private data: T[]){};
+    getItem(index: number): T {
+        return this.data[index];
+    }
+}
+// const classgeneric = new ClassGeneric('hello');
+const classgeneric02 = new ClassGeneric02([{name: 'jajaj'}]);
+console.log(classgeneric02.getItem(0))
+
+class ClassGeneric03<T extends string | number> {
+    constructor(private data: T[]){};
+    getItem(index: number): T {
+        return this.data[index];
+    }
+}
+
+const classgeneric03 = new ClassGeneric03(['sun', 'nercms']);
+console.log(classgeneric03.getItem(0))
+
+// 泛型声明
+function hello<T>(param: T){
+    return param
+}
+// 泛型声明了函数hello的类型：要求函数必须是一个接受泛型的函数
+const func: <T>(param: T) => T = hello;
+func<string>('hello');
