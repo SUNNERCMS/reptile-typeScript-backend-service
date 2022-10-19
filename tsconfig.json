@@ -2,6 +2,8 @@
   "files": [
     "./src/analyer.ts",
     "./src/crowller.ts",
+    "./src/index.ts",
+    "./src/router.ts"
   ],
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */
@@ -90,7 +92,7 @@
     // "useUnknownInCatchVariables": true,               /* Default catch clause variables as 'unknown' instead of 'any'. */
     // "alwaysStrict": true,                             /* Ensure 'use strict' is always emitted. */
     "noUnusedLocals": true,                           /* Enable error reporting when local variables aren't read.校验局部文件中未被使用的定义的变量 */
-    "noUnusedParameters": true,                       /* Raise an error when a function parameter isn't read. 校验函数中未被使用的参数*/
+    // "noUnusedParameters": true,                       /* Raise an error when a function parameter isn't read. 校验函数中未被使用的参数*/
     // "exactOptionalPropertyTypes": true,               /* Interpret optional property types as written, rather than adding 'undefined'. */
     // "noImplicitReturns": true,                        /* Enable error reporting for codepaths that do not explicitly return in a function. */
     // "noFallthroughCasesInSwitch": true,               /* Enable error reporting for fallthrough cases in switch statements. */

@@ -314,5 +314,60 @@ declare function greet(greeting: string): void;
 greet("hello, world");
 ```
 
+## v6: Express项目结构搭建
+官方网址：https://expressjs.com/en/5x/api.html#path-examples
+```js
+  "scripts": {
+    "dev": "ts-node ./src/crowller.ts",
+    "dev-build": "tsc -w",
+    "dev-start": "nodemon ./build/index.js",
+    "start": "tsc && concurrently npm:dev-*"
+  },
+```
+1、完善该指令 "start": "tsc && concurrently npm:dev-*"
+> 若果不先运行一次tsc进行编译，那么没有编译出来的index.js文件，会导致找不到index文件  
+> Error: Cannot find module '/Users/sunzhaoxiang/Desktop/reptile-typeScript-project/index.js'  
+2、将爬虫类的创建，放到路由匹配的回调函数中
+```js
+router.get('/demo', (req: Request, res: Response) => {
+    // 创建爬虫类触发爬虫的数据获取
+    // 网页key
+    const key = 'x3b174jsx';
+    const url = `http://www.dell-lee.com/typescript/demo.html?secret=${key}`;
 
+    // 获取分析器实例
+    const analyer = Analyer.getInstance();
+    new Crowller(analyer, url);
+    res.send('demo');
+});
+```
+3、使用body-parser进行表单数据的解析
+```js
+// Series of Middleware
+app.use(bodyParseMiddleware, router);
+
+router.post('/demo', (req: Request, res: Response) => {
+    // body需要用body-parse中间件进行解析，保证始终有body字段
+    if(req.body.password === '123') {
+        // 创建爬虫类触发爬虫的数据获取
+        // 网页key
+        const key = 'x3b174jsx';
+        const url = `http://www.dell-lee.com/typescript/demo.html?secret=${key}`;
+    
+        // 获取分析器实例
+        const analyer = Analyer.getInstance();
+        new Crowller(analyer, url);
+        res.send('口令正确并爬取数据');
+    } else {
+        res.send('口令不对')
+    }
+});
+```
+
+
+
+
+
+##### 相关知识点
+1、app.use的使用：https://expressjs.com/en/5x/api.html#app.use
 

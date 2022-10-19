@@ -17,7 +17,7 @@ class Analyer {
         const $ = cheerio_1.default.load(html);
         const courseItems = $('.course-item');
         const courseInfo = [];
-        courseItems.map((index, element) => {
+        courseItems.map((_, element) => {
             const descs = $(element).find('.course-desc');
             const title = descs.eq(0).text();
             const count = parseInt(descs.eq(1).text().split('：')[1], 10);

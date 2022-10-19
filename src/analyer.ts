@@ -34,7 +34,7 @@ export default class Analyer implements AnalyerType {
         const $ = cheerio.load(html);
         const courseItems = $('.course-item');
         const courseInfo: Course[]= [];
-        courseItems.map((index, element) => {
+        courseItems.map((_, element) => {
             const descs = $(element).find('.course-desc');
             const title = descs.eq(0).text();
             const count = parseInt(descs.eq(1).text().split('：')[1], 10);

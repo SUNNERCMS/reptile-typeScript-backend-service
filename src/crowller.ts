@@ -1,6 +1,6 @@
 import superagent from 'superagent';
 import fs from 'fs';
-import Analyer, {AnalyerType} from './analyer';
+import {AnalyerType} from './analyer';
 import path from 'path';
 
 // 爬虫类
@@ -27,12 +27,6 @@ class Crowller {
     constructor(public analyer: AnalyerType, public url: string) {
         this.initSpiderProcess();
     }
-
 }
-// 网页key
-const key = 'x3b174jsx';
-const url = `http://www.dell-lee.com/typescript/demo.html?secret=${key}`;
 
-// 获取分析器实例
-const analyer = Analyer.getInstance();
-new Crowller(analyer, url);
+export default Crowller;
