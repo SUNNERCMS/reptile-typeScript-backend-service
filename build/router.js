@@ -20,7 +20,8 @@ router.get('/', (req, res) => {
     `);
 });
 router.post('/demo', (req, res) => {
-    if (req.body.password === '123') {
+    const { password } = req.body;
+    if (password === '123') {
         const key = 'x3b174jsx';
         const url = `http://www.dell-lee.com/typescript/demo.html?secret=${key}`;
         const analyer = analyer_1.default.getInstance();
@@ -28,7 +29,7 @@ router.post('/demo', (req, res) => {
         res.send('口令正确并爬取数据');
     }
     else {
-        res.send('口令不对');
+        res.send(`${req.customProperty}-口令不对`);
     }
 });
 exports.default = router;

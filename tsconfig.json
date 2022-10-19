@@ -3,7 +3,8 @@
     "./src/analyer.ts",
     "./src/crowller.ts",
     "./src/index.ts",
-    "./src/router.ts"
+    "./src/router.ts",
+    "./src/custom.d.ts"
   ],
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */

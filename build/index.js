@@ -8,6 +8,10 @@ const router_1 = __importDefault(require("./router"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const app = (0, express_1.default)();
 const bodyParseMiddleware = body_parser_1.default.urlencoded({ extended: false });
+app.use((req, res, next) => {
+    req.customProperty = 'sunnercms';
+    next();
+});
 app.use(bodyParseMiddleware, router_1.default);
 app.listen(7001, () => {
     console.log('server is running');

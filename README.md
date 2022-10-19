@@ -315,7 +315,8 @@ greet("hello, world");
 ```
 
 ## v6: Express项目结构搭建
-官方网址：https://expressjs.com/en/5x/api.html#path-examples
+官方网址：https://expressjs.com/en/5x/api.html#path-examples  
+app.use的使用：https://expressjs.com/en/5x/api.html#app.use
 ```js
   "scripts": {
     "dev": "ts-node ./src/crowller.ts",
@@ -326,7 +327,8 @@ greet("hello, world");
 ```
 1、完善该指令 "start": "tsc && concurrently npm:dev-*"
 > 若果不先运行一次tsc进行编译，那么没有编译出来的index.js文件，会导致找不到index文件  
-> Error: Cannot find module '/Users/sunzhaoxiang/Desktop/reptile-typeScript-project/index.js'  
+> Error: Cannot find module '/Users/sunzhaoxiang/Desktop/reptile-typeScript-project/index.js'    
+
 2、将爬虫类的创建，放到路由匹配的回调函数中
 ```js
 router.get('/demo', (req: Request, res: Response) => {
@@ -363,11 +365,94 @@ router.post('/demo', (req: Request, res: Response) => {
     }
 });
 ```
+## v7: 扩展解决Express的类型定义文件问题
+##### 问题：  
+- 问题1:@types/express类型库，.d.ts类型文件定义不准确问题  
+
+```js
+router.post('/demo', (req: Request, res: Response) => {
+    // body需要用body-parse中间件进行解析，保证始终有body字段
+    const {password} = req.body;
+}
+```
+鼠标放上password实际类型注解是any: `const password: any`  
+查看类型注解库中代码发现req.body的注解类型就是any,从body中进行结构获取到的字段类型都是any.  
+
+```js
+body: ReqBody;
+ReqBody = any`
+````  
+处理方式：使用继承形式的interface, 对不准确的定义进行完善。
+```js
+interface RequestWithBody extends Request{
+    body: {
+        password: string
+    }
+}
+
+router.post('/demo', (req: RequestWithBody, res: Response) => {
+    // body需要用body-parse中间件进行解析，保证始终有body字段
+    const {password} = req.body;
+}
+>>> const password: string
+```
+
+- 问题2: 在使用中间件的时候，对req或者res做了修改之后，实际上类型注解并没有相应的改变  
+
+```js
+// 注意：自定义的中间件需要放到router中间件之前，否则添加的属性，在页面中拿不到
+app.use((req, res, next) => {
+    req.customProperty = 'sunnercms'; 
+    next();
+});
+app.use(bodyParseMiddleware, router);
+
+```
+校验提示如下：req本身是没有customProperty
+> Property 'customProperty' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'
+
+```js
+import * as core from 'express-serve-static-core';
+
+interface Request<
+    P = core.ParamsDictionary,
+    ResBody = any,
+    ReqBody = any,
+    ReqQuery = core.Query,
+    Locals extends Record<string, any> = Record<string, any>
+> extends core.Request<P, ResBody, ReqBody, ReqQuery, Locals> {}
+// 追踪看到类型注解文件中Request是继承的core核心模块
+declare global {
+    namespace Express {
+        interface Request {}
+        interface Response {}
+        interface Application {}
+    }
+}
+```
+
+处理：使用类型融合的形式进行类型注解完善，类型融合实际上是以namespace命名空间为依据进行的融合。
+> 创建custom.d.ts文件  
+
+```js
+// 类型融合增加了customProperty类型注解
+declare namespace Express {
+    interface Request {
+        customProperty: string | undefined
+    }
+}
+
+router.post('/demo', (req: RequestWithBody, res: Response) => {
+    // body需要用body-parse中间件进行解析，保证始终有body字段
+    const {password} = req.body;
+    if(password === '123') {
+     ......
+    } else {
+        // 在这里使用了中间件中对req新增的属性，req会主动有customProperty提示，对req或者res做了修改之后，实际上类型注解，通过融合的形式发生了相应的改变 
+        res.send(`${req.customProperty}-口令不对`)
+    }
+});
+```
 
 
-
-
-
-##### 相关知识点
-1、app.use的使用：https://expressjs.com/en/5x/api.html#app.use
 
