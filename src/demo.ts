@@ -619,3 +619,70 @@ console.log("Half the number of widgets is " + foo / 2);
 // Use declare function to declare functions.
 declare function greet(greeting: string): void;
 greet("hello, world");
+
+/********************* 4-14 模块代码的类型描述文件 **********************/
+// 使用declare module进行模块声明
+// page.ts
+import $ from 'jquery';
+
+$(function() {
+    $('body').html('<div>dfdf</div>');
+    new $.fn.init();
+});
+
+// jquery.d.ts 
+declare module 'jquery' {
+    interface JqueryInstance {
+        html: (html: string) => JqueryInstance
+    }
+    function $(readFunc: () => void): void;
+    function $(selector: string): JqueryInstance;
+    namespace $ {
+        namespace fn {
+            class init {}
+        }
+    }
+}
+
+/********************* 4-16 keyof的使用 **********************/
+// 官方文档： https://www.typescriptlang.org/docs/handbook/2/keyof-types.html
+interface Person01 {
+    name: string,
+    age: number,
+    havemoney: boolean
+};
+class Teacher {
+    constructor(private info: Person01) {};
+    getInfo(key: string) {
+        return this.info[key]; // getInfo接收的字符串参数，可能不在Person01注解的约束之内
+    }
+}
+const teacher = new Teacher({
+    name: 'sun',
+    age: 88,
+    havemoney: false
+});
+
+teacher.getInfo('name');
+
+
+// 可以使用keyof结合泛型，进行对象key的类型注解约束
+interface Person02 {
+    name: string,
+    age: number,
+    havemoney: boolean
+};
+class Teacher02 {
+    constructor(private info: Person02) {};
+    // 泛型+keyof：表明泛型所指均为Person02中的key，Person01[T]根据key获取对应内容的类型
+    getInfo<T extends keyof Person02>(key: T): Person01[T] {
+        return this.info[key]; 
+    }
+}
+const teacher02 = new Teacher02({
+    name: 'sun',
+    age: 88,
+    havemoney: false
+});
+
+teacher02.getInfo('name');
