@@ -4,7 +4,8 @@
     "./src/crowller.ts",
     "./src/index.ts",
     "./src/router.ts",
-    "./src/custom.d.ts"
+    "./src/custom.d.ts",
+    "./src/utils.ts",
   ],
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */

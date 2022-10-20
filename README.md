@@ -453,6 +453,57 @@ router.post('/demo', (req: RequestWithBody, res: Response) => {
     }
 });
 ```
+## v8: cookie-session模拟登录
+借助[cookie-session](https://www.npmjs.com/package/cookie-session)基于cookie的会话中间件，缓存会话信息。
+```js
+app.use(cookieSession({
+    name: 'session',
+    keys: ['key01'],
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}));
+```
+通过缓存登录状态进行登录，登出，数据展示的逻辑处理
+```js
+router.post('/login', (req: RequestWithBody, res: Response) => {
+    // body需要用body-parse中间件进行解析，保证始终有body字段
+    const {password} = req.body;
+    if(isLogin(req)) {
+        res.send('已经登录过了');
+    } else {
+        if(password === '123' && req.session) {
+            req.session.loginStatus = true;
+            res.send('登录成功');
+        } else {
+            res.send('登录失败');
+        }
+    }
+});
 
+router.get('/logout', (req: RequestWithBody, res: Response) => {
+    if(req.session) {
+        req.session.loginStatus = false;
+    };
+    // 退出登录之后，回到根路径页面
+    res.redirect('/');
+});
+```
+通过文件内容获取及解析，展示爬取到的数据
+```js
+
+router.get('/showData', (req: RequestWithBody, res: Response) => {
+    // 避免course.json文件没有创建报错
+    try {
+        if(isLogin(req)) {
+            const dataPath = path.resolve(__dirname, '../data/course.json');
+            const courseData = fs.readFileSync(dataPath, 'utf-8');
+            res.send(JSON.parse(courseData));
+        } else {
+            res.send('请先登录');
+        }
+    } catch {
+        res.send('暂时爬取不到内容');
+    }
+});
+```
 
 
