@@ -1,11 +1,11 @@
 {
   "files": [
-    "./src/analyer.ts",
-    "./src/crowller.ts",
+    "src/utils/analyer.ts",
+    "src/utils/crowller.ts",
     "./src/index.ts",
     "./src/router.ts",
     "./src/custom.d.ts",
-    "./src/utils.ts",
+    "src/utils/util.ts",
   ],
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */

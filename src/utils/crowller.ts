@@ -5,7 +5,7 @@ import path from 'path';
 
 // 爬虫类
 class Crowller {
-    private filePath = path.resolve(__dirname, '../data/course.json');
+    private filePath = path.resolve(__dirname, '../../data/course.json');
 
     // superagent获取页面数据
     private async getRowHtml() {
