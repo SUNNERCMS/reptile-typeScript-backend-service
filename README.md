@@ -541,6 +541,7 @@ router.get('/showData', logStatusCheckMiddleware, (req: RequestWithBody, res: Re
 ```
 
 ## v10: 装饰器
+装饰器通过声明性语法添加了在定义类时扩充类及其成员的能力。（Decorators add the ability to augment a class and its members as the class is defined, through a declarative syntax.）
 #### v10-1 类装饰器
 - 装饰器也可以使用箭头函数。
 - 可以使用多个装饰器对同一个类进行装饰。
@@ -647,4 +648,162 @@ const classNew = testDecorator01()(class Test {
 const test = new classNew('boy');
 // console.log(test); // Test { name: 'girl' }, 先执行实例化类时的boy，最后由装饰器进行了属性覆盖。
 console.log('res:', test.getName()); // res: girl
+```
+#### v10-2 方法装饰器
+方法装饰器特点：
+- 1、对类中方法的装饰，执行时机也是类定义完成之后，而非必要要将类实例化。    
+- 2、类方法装饰器的参数：  
+（1）target:普通方法，对应的是类的prototype。静态方法，对应的是类的构造函数。  
+（2）key: 所修饰的类方法的名称。  
+ (3) descriptor: PropertyDecorator, 可以针对类的函数做一些配置，如是否是可获取get，可写writable，可遍历enumerable;  
+
+```js
+function getNameDecorator(target: any, key: string, descriptor: PropertyDescriptor) {
+    descriptor.writable = false;
+};
+class Test {
+    name:string;
+    constructor(name: string) {
+        this.name = name;
+    }
+    @getNameDecorator
+    getName() {
+        return this.name;
+    }
+}
+const test = new Test('sun');
+console.log(test.getName()); //---> sun
+test.getName = () => '123'; // ---> '123', 会执行实例重写的类方法，进行方法的覆盖。descriptor.writable = false; 装饰之后会报错提示，不能进行类方法的复写。
+```
+
+```js
+// descriptor.value: 表示当前所装饰方法的值，这里descriptor.value表示的是getName这个方法。
+function getNameDecorator01(target: any, key: string, descriptor: PropertyDescriptor) {
+    descriptor.value = function() {
+        return 'decorator'
+    };
+};
+class Test01 {
+    name:string;
+    constructor(name: string) {
+        this.name = name;
+    }
+    @getNameDecorator
+    getName() {
+        return this.name;
+    }
+}
+const test01 = new Test01('sun');
+console.log(test01.getName()); //---> decorator
+
+```
+
+#### v10-3 访问器装饰器
+[了解下装饰器](https://cloud.tencent.com/developer/article/1768857)  
+[Accessor Decorators](https://www.typescriptlang.org/docs/handbook/decorators.html#accessor-decorators)
+```js
+// 访问器装饰器，setter和getter不能同时设置。
+function getNameDecorator03(target: any, key: string, descriptor: PropertyDescriptor) {
+    descriptor.configurable = true;
+};
+class Test03 {
+    private _name: string;
+    constructor(name: string) {
+        this._name = name;
+    }
+    @getNameDecorator03
+    get name() {
+        return this._name;
+    }
+    set name(name: string) {
+        this._name = name;
+    }
+}
+const test03 = new Test03('sun');
+test03.name = '999';
+console.log('03---', test03.name); //---> decorator
+```
+
+#### v10-3 属性装饰器
+- 无法直接修改实例上的属性值。
+- 属性装饰器修改的是Target.prototype原型上的属性。
+- 可以通过返回的descriptor，对属性的descriptor进行重写。
+```js
+// 属性装饰器，只有两个参数，没有属性描述符，可以让装饰器返回descriptor，进行属性描述符的配置。
+function nameDecorator01(target: any, key: string): any {
+    const descriptor: PropertyDescriptor = {
+        writable: false
+    }
+    return descriptor;
+};
+class Test05 {
+   @nameDecorator01
+   name = 'Test05';
+}
+const test05 = new Test05();
+test05.name = 'yyy'; // Cannot assign to read only property 'name' of object '#<Test05>', writable: true,可设置该属性可写，输出test05---: yyy
+console.log('test05---:', test05.name);
+```
+
+
+```js
+// 1、第一个参数。如果装饰的是静态方法，则是这个类 Target 本身；如果装饰的是原型方法，则是类的原型对象 Target.prototype
+// 2、第二个参数。这个属性的名称
+function nameDecorator(target: any, key: string) {
+    // 装饰器接收的target是原型对象
+    target[key] = 'hahahh';
+};
+class Test04 {
+   @nameDecorator
+   name = 'Test04';
+}
+const test04 = new Test04();
+console.log('04---', test04.name); //---> Test04
+console.log('04---04', (test04 as any).__proto__.name); //---> hahahh
+
+```
+#### v10-3 参数装饰器
+- 1、第一个参数。如果装饰的是静态方法的参数，则是这个类Target本身；如果装饰的是原型方法的参数，则是类的原型对象Target.prototype  
+- 2、第二个参数。参数所处的函数名称  
+- 3、第三个参数，该参数位于函数参数列表的位置下标(number)  
+- 不能在箭头函数中的参数填加参数装饰器  
+```js
+function getPersonParamDecorator(target: any, key: string, paramIndex: number): any {
+    console.log('getPersonParamDecorator', target, key, paramIndex); //
+};
+class Test06 {
+   getPerson(name: string, @getPersonParamDecorator age: number) {
+        console.log(name, age);
+   }
+}
+const test06 = new Test06();
+test06.getPerson('sun', 18);
+```
+#### v10-3 装饰器应用场景demo: 提取类中方法的公共处理部分
+```js
+const userInfo: any = undefined;
+function catchError(target: any, key: string, descriptor: PropertyDescriptor) {
+    const fn = descriptor.value; // 装饰的函数, 单独复制给变量，为了在重新定义函数格式时用来执行。
+    descriptor.value = function(...args: any) {
+        try{
+            // 函数参数的处理
+            fn.apply(this, args);
+        } catch(e) {
+            console.log('useInfo 数据有问题');
+        }
+    }
+}
+class Test07 {
+    @catchError
+    getName(name: string) {
+        console.log('name', name);
+        return userInfo.name();
+    }
+    @catchError
+    getAge() {
+        return userInfo.age();
+    }
+}
+const test07 = new Test07();
+test07.getName('sun');
 ```
