@@ -855,3 +855,33 @@ class Test001 {
 console.log(Reflect.getMetadata('data', Test001.prototype, 'getName'));
 ```
 
+模拟@Reflect.metadata  
+各种装饰器的执行顺序，如下：  
+1、先执行实例成员装饰器（非静态的），再执行静态成员装饰器  
+2、执行成员的装饰器时，先执行参数装饰器，再执行作用于成员的装饰器  
+3、执行完 1、2 后，执行构造函数的参数装饰器；最后执行作用于 class 的装饰器  
+```js
+function showData(target: typeof Test002) {
+    console.log('uuu---:', target, target.prototype);
+    for(let key in target.prototype) {
+        const data = Reflect.getMetadata('data', target.prototype, key);
+        console.log('data===:', data); // name, age
+    }
+}
+
+// 作用相当于@Reflect.metadata的使用
+function setData(metakey: string, metavalue: string) {
+    return function(target: Test002, key:string) {
+        Reflect.defineMetadata(metakey, metavalue, target, key);
+    }
+}
+@showData
+class Test002 {
+    @Reflect.metadata('data', 'name')
+    getName() {}
+
+    @setData('data', 'age')
+    getAge() {}
+}
+
+```

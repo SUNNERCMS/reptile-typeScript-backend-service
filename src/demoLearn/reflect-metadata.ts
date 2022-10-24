@@ -29,7 +29,14 @@ function showData(target: typeof Test002) {
     console.log('uuu---:', target, target.prototype);
     for(let key in target.prototype) {
         const data = Reflect.getMetadata('data', target.prototype, key);
-        console.log('data===:', key, data);
+        console.log('data===:', data); // name, age
+    }
+}
+
+// 作用相当于@Reflect.metadata的使用
+function setData(metakey: string, metavalue: string) {
+    return function(target: Test002, key:string) {
+        Reflect.defineMetadata(metakey, metavalue, target, key);
     }
 }
 @showData
@@ -37,6 +44,6 @@ class Test002 {
     @Reflect.metadata('data', 'name')
     getName() {}
 
-    @Reflect.metadata('data', 'age')
+    @setData('data', 'age')
     getAge() {}
 }
