@@ -6,7 +6,8 @@
     "./src/router.ts",
     "./src/custom.d.ts",
     "src/utils/util.ts",
-    "src/demoLearn/classDecorator.ts"
+    "src/demoLearn/classDecorator.ts",
+    "src/demoLearn/reflect-metadata.ts"
   ],
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */

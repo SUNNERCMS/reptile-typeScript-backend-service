@@ -541,7 +541,13 @@ router.get('/showData', logStatusCheckMiddleware, (req: RequestWithBody, res: Re
 ```
 
 ## v10: 装饰器
-装饰器通过声明性语法添加了在定义类时扩充类及其成员的能力。（Decorators add the ability to augment a class and its members as the class is defined, through a declarative syntax.）
+装饰器通过声明性语法添加了在定义类时扩充类及其成员的能力。
+（Decorators add the ability to augment a class and its members as the class is defined, through a declarative syntax.）   
+
+各种装饰器的执行顺序，如下：  
+1、先执行实例成员装饰器（非静态的），再执行静态成员装饰器  
+2、执行成员的装饰器时，先执行参数装饰器，再执行作用于成员的装饰器  
+3、执行完 1、2 后，执行构造函数的参数装饰器；最后执行作用于 class 的装饰器  
 #### v10-1 类装饰器
 - 装饰器也可以使用箭头函数。
 - 可以使用多个装饰器对同一个类进行装饰。
@@ -807,3 +813,45 @@ class Test07 {
 const test07 = new Test07();
 test07.getName('sun');
 ```
+
+## v11: metadata元数据
+[Metadata](https://www.typescriptlang.org/docs/handbook/decorators.html#metadata) 
+[reflect-metadata](https://www.npmjs.com/package/reflect-metadata)
+
+需要设置emitDecoratorMetadata配置项方可将元数据应用在装饰器上。
+```js
+{
+  "compilerOptions": {
+    "target": "ES5",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  }
+}
+```
+
+```js
+import 'reflect-metadata';
+
+const user = {
+    name: 'sun'
+};
+
+// metadataKey, metadataValue, target
+// 第一个参数：元数据的key
+// 第二个参数：元数据的值value
+// 第三个参数：元数据挂载的位置
+Reflect.defineMetadata('data', 'test', user);
+console.log(Reflect.getMetadata('data', user));
+
+
+// 通过装饰器的形式应用在类时，使用@Reflect.metadata(metadataKey, metadataValue)
+// get metadata value of a metadata key on the prototype chain of an object or property
+// let result = Reflect.getMetadata(metadataKey, target);
+// let result = Reflect.getMetadata(metadataKey, target, propertyKey);
+class Test001 {
+    @Reflect.metadata('data', 'test001')
+    getName() { }
+}
+console.log(Reflect.getMetadata('data', Test001.prototype, 'getName'));
+```
+
