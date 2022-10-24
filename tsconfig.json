@@ -6,6 +6,7 @@
     "./src/router.ts",
     "./src/custom.d.ts",
     "src/utils/util.ts",
+    "src/utils/getRealOwnPropertyNames.ts",
     "src/demoLearn/classDecorator.ts",
     "src/demoLearn/reflect-metadata.ts"
   ],

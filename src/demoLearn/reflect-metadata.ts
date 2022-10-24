@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import {getRealOwnPropertyNames} from '../utils/getRealOwnPropertyNames';
 //[Metadata](https://www.typescriptlang.org/docs/handbook/decorators.html#metadata) 
 //[reflect-metadata](https://www.npmjs.com/package/reflect-metadata)
 const user = {
@@ -26,8 +27,7 @@ console.log(Reflect.getMetadata('data', Test001.prototype, 'getName'));
 
 // 模拟@Reflect.metadata
 function showData(target: typeof Test002) {
-    console.log('uuu---:', target, target.prototype);
-    for(let key in target.prototype) {
+    for(let key of getRealOwnPropertyNames(target)) {
         const data = Reflect.getMetadata('data', target.prototype, key);
         console.log('data===:', data); // name, age
     }

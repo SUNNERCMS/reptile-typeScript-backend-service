@@ -860,10 +860,22 @@ console.log(Reflect.getMetadata('data', Test001.prototype, 'getName'));
 1、先执行实例成员装饰器（非静态的），再执行静态成员装饰器  
 2、执行成员的装饰器时，先执行参数装饰器，再执行作用于成员的装饰器  
 3、执行完 1、2 后，执行构造函数的参数装饰器；最后执行作用于 class 的装饰器  
+
+获取类本身定义的属性或者方法名称，不包括constructor,class定义的方法是不可通过枚举的
+```js
+// https://juejin.cn/post/6844903875904798734
+// class定义的方法是不可通过枚举的，可通过下面的方式验证
+// Object.getOwnPropertyDescriptor(classProto, 'testMethod') 
+// // {value: ƒ, writable: true, enumerable: false, configurable: true}
+export const getRealOwnPropertyNames = (classTarget: ClassWithConstructor): string[] => {
+    const classPropertyNames = Object.getOwnPropertyNames(classTarget.prototype);
+    const realOwnPropertyNames =  classPropertyNames.filter((itemName: string) => itemName !== 'constructor');
+    return realOwnPropertyNames;
+}
+```
 ```js
 function showData(target: typeof Test002) {
-    console.log('uuu---:', target, target.prototype);
-    for(let key in target.prototype) {
+    for(let key of getRealOwnPropertyNames(target)) {
         const data = Reflect.getMetadata('data', target.prototype, key);
         console.log('data===:', data); // name, age
     }
@@ -885,3 +897,7 @@ class Test002 {
 }
 
 ```
+
+## 相关知识点
+[1、for in 和for of的区别](https://www.jianshu.com/p/c43f418d6bf0)  
+[2、如何遍历class中的原型方法](https://juejin.cn/post/6844903875904798734)
