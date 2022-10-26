@@ -897,7 +897,62 @@ class Test002 {
 }
 
 ```
-
-## 相关知识点
+##### 相关知识点
 [1、for in 和for of的区别](https://www.jianshu.com/p/c43f418d6bf0)  
 [2、如何遍历class中的原型方法](https://juejin.cn/post/6844903875904798734)
+
+## v12: 创建控制器和装饰器
+控制器：LoginController，用于生成路由的控制器，将路径和执行方法通过装饰器进行绑定。
+1、装饰器文件
+```js
+export const get = (path: string) => {
+    return function(target: any, key: string) {
+        Reflect.defineMetadata('path', path, target, key); // 也即是将‘/’的路径绑定到home方法上。
+    }
+}
+
+export const controller = (target: any) => {
+    for(let key of getRealOwnPropertyNames(target)) {
+        const data = Reflect.getMetadata('path', target.prototype, key);
+        console.log('data===:', data); // name, age
+    }
+}
+```
+2、控制器定义
+```js
+// 可以通过面向对象进行改造：将路径通过装饰器绑定到相应的执行函数上
+@controller
+class LoginController {
+    @get('/')
+    home(req: Request, res: Response) {
+        if(isLogin(req)) {
+            res.send(`
+                <html>
+                    <body>
+                        <a href='./getData'>爬取数据</a>
+                        <a href='./showData'>展示内容</a>
+                        <a href='./logout'>退出</a>
+                    </body>
+                </html>
+            `);
+        } else {
+            res.send(`
+                <html>
+                    <body>
+                        <form method="post" action="/login">
+                            <input type="password" name="password"/>
+                            <button>登录</button>
+                        </form>
+                    </body>
+                </html>
+            `);
+        }
+    }
+}
+
+export default LoginController;
+```
+3、控制器使用
+```js
+router.get('/', loginController.home);
+```

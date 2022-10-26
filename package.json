@@ -7,9 +7,10 @@
     "dev": "ts-node ./src/crowller.ts",
     "dev-cd": "ts-node ./src/demoLearn/classDecorator.ts",
     "dev-md": "ts-node ./src/demoLearn/reflect-metadata.ts",
-    "dev-build": "tsc -w",
-    "dev-start": "nodemon ./build/index.js",
-    "start": "tsc && concurrently npm:dev-*"
+    "dev-lc": "ts-node ./src/controller/LoginController.ts",
+    "dev_build": "tsc -w",
+    "dev_start": "nodemon ./build/index.js",
+    "start": "tsc && concurrently npm:dev_*"
   },
   "nodemonConfig": {
     "watch": [

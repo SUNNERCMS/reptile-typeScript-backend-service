@@ -1,10 +1,13 @@
+import fs from 'fs';
+import path from 'path';
 import {Router, Request, Response, NextFunction} from 'express';
 import Crowller from './utils/crowller';
 import Analyer from './utils/analyer';
 import {isLogin, formatResponse} from './utils/util';
 import {RES_STATUS} from './config/responseStatus';
-import fs from 'fs';
-import path from 'path';
+import LoginController from './controller/LoginController';
+
+const loginController = new LoginController();
 
 const router = Router();
 
@@ -24,30 +27,8 @@ const logStatusCheckMiddleware = (req: Request, res: Response, next: NextFunctio
     }
 }
 
-router.get('/', (req: Request, res: Response) => {
-    if(isLogin(req)) {
-        res.send(`
-            <html>
-                <body>
-                    <a href='./getData'>爬取数据</a>
-                    <a href='./showData'>展示内容</a>
-                    <a href='./logout'>退出</a>
-                </body>
-            </html>
-        `);
-    } else {
-        res.send(`
-            <html>
-                <body>
-                    <form method="post" action="/login">
-                        <input type="password" name="password"/>
-                        <button>登录</button>
-                    </form>
-                </body>
-            </html>
-        `);
-    }
-});
+// 可以通过面向对象进行改造：将路径通过装饰器绑定到相应的执行函数上
+router.get('/', loginController.home);
 
 router.post('/login', (req: RequestWithBody, res: Response) => {
     // body需要用body-parse中间件进行解析，保证始终有body字段
