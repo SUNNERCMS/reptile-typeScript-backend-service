@@ -2,3 +2,6 @@ node_modules
 data
 course.json
 .tsbuildinfo
+build
+/build
+./build

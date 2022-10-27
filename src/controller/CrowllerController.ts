@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import 'reflect-metadata';
-import {Request, Response} from 'express';
+import {Request, Response, NextFunction} from 'express';
 import {isLogin, formatResponse} from '../utils/util';
 import {controller, get, useMiddleware} from './decorators';
 import {RES_STATUS} from '../config/responseStatus';

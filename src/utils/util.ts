@@ -1,4 +1,4 @@
-import {RequestWithBody} from '../router';
+import {RequestWithBody} from '../controller/CrowllerController';
 
 interface Result {
     status: number,
