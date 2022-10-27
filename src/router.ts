@@ -5,9 +5,6 @@ import Crowller from './utils/crowller';
 import Analyer from './utils/analyer';
 import {isLogin, formatResponse} from './utils/util';
 import {RES_STATUS} from './config/responseStatus';
-import LoginController from './controller/LoginController';
-
-const loginController = new LoginController();
 
 const router = Router();
 
@@ -26,32 +23,6 @@ const logStatusCheckMiddleware = (req: Request, res: Response, next: NextFunctio
         res.send('请先登录')
     }
 }
-
-// 可以通过面向对象进行改造：将路径通过装饰器绑定到相应的执行函数上
-router.get('/', loginController.home);
-
-router.post('/login', (req: RequestWithBody, res: Response) => {
-    // body需要用body-parse中间件进行解析，保证始终有body字段
-    const {password} = req.body;
-    if(isLogin(req)) {
-        res.json(formatResponse({}, RES_STATUS.HAD_LOGIN));
-    } else {
-        if(password === '123' && req.session) {
-            req.session.loginStatus = true;
-            res.json(formatResponse({}, RES_STATUS.SUCCESS));
-        } else {
-            res.json(formatResponse({}, RES_STATUS.FAIL, '登录失败'));
-        }
-    }
-});
-
-router.get('/logout', (req: RequestWithBody, res: Response) => {
-    if(req.session) {
-        req.session.loginStatus = false;
-    };
-    // 退出登录之后，回到根路径页面
-    res.redirect('/');
-});
 
 router.get('/getData', logStatusCheckMiddleware, (req: RequestWithBody, res: Response) => {
     // 创建爬虫类触发爬虫的数据获取
