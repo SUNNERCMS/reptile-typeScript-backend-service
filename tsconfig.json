@@ -9,7 +9,8 @@
     "src/utils/getRealOwnPropertyNames.ts",
     "src/demoLearn/classDecorator.ts",
     "src/demoLearn/reflect-metadata.ts",
-    "src/controller/LoginController.ts"
+    "src/controller/LoginController.ts",
+    "src/controller/CrowllerController.ts"
   ],
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */

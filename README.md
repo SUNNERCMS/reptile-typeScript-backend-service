@@ -996,3 +996,78 @@ export const controller = (target: any) => {
     }
 }
 ```
+
+## v14: 中间件装饰器
+之前是在获取数据之前，通过自定义的中间件，做了登录态的check, 可以通过装饰器给路由处理方法注入该中间件，在控制器生成路由时引入。
+```js
+// 登录态的校验中间件
+const logStatusCheckMiddleware = (req: Request, res: Response, next: NextFunction) => {
+    // 如果已经登录，接着执行后续回调
+    if(isLogin(req)) {
+        next();
+    } else {
+        res.send('请先登录')
+    }
+}
+
+router.get('/getData', logStatusCheckMiddleware, (req: RequestWithBody, res: Response) => {
+    // 创建爬虫类触发爬虫的数据获取
+    // 网页key
+    const key = 'x3b174jsx';
+    const url = `http://www.dell-lee.com/typescript/demo.html?secret=${key}`;
+
+    // 获取分析器实例
+    const analyer = Analyer.getInstance();
+    new Crowller(analyer, url);
+    res.json(formatResponse({}, RES_STATUS.SUCCESS, ''));
+});
+```
+
+建立中间件装饰器，给getData方法注入中间件
+```js
+// 中间件装饰器
+export const useMiddleware = (middleware: Function) => {
+    // 返回装饰器
+    return function(target: any, key: string) {
+        Reflect.defineMetadata('middleware', middleware, target, key); 
+    }
+}
+```
+中间件装饰器的使用
+```js
+// 中间件装饰器
+    @get('/getData')
+    @useMiddleware(logStatusCheckMiddleware)
+    getData(req: Request, res: Response) {
+        // 创建爬虫类触发爬虫的数据获取
+        // 网页key
+        const key = 'x3b174jsx';
+        const url = `http://www.dell-lee.com/typescript/demo.html?secret=${key}`;
+
+        // 获取分析器实例
+        const analyer = Analyer.getInstance();
+        new Crowller(analyer, url);
+        res.json(formatResponse({}, RES_STATUS.SUCCESS, ''));
+    };
+```
+
+路由控制器的生成，通过遍历类的方法时，获取到该方法上注入的中间件。
+```js
+export const controller = (target: any) => {
+    for(let key of getRealOwnPropertyNames(target)) {
+        const pathData = Reflect.getMetadata('path', target.prototype, key);
+        const method: Method = Reflect.getMetadata('method', target.prototype, key);
+        const middleware = Reflect.getMetadata('middleware', target.prototype, key);
+        const handle = target.prototype[key];
+        // 这里借助遍历生成相应的路由，并对应关联的路由回调处理
+        if(pathData && method && handle) {
+            // 获取到绑定到路由方法上的请求类型，生成相应请求方法的路由
+            if(middleware) {
+                router[method](pathData, middleware, handle);
+            } else {
+                router[method](pathData, handle);
+            }
+        }
+    }
+}
+```

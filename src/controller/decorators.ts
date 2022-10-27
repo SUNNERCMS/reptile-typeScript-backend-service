@@ -23,6 +23,14 @@ const getRequestDecorator = (methodType: string) => {
     }
 }
 
+// 中间件装饰器
+export const useMiddleware = (middleware: Function) => {
+    // 返回装饰器
+    return function(target: any, key: string) {
+        Reflect.defineMetadata('middleware', middleware, target, key); 
+    }
+}
+
 export const get = getRequestDecorator('get');
 export const post = getRequestDecorator('post');
 
@@ -30,11 +38,16 @@ export const controller = (target: any) => {
     for(let key of getRealOwnPropertyNames(target)) {
         const pathData = Reflect.getMetadata('path', target.prototype, key);
         const method: Method = Reflect.getMetadata('method', target.prototype, key);
+        const middleware = Reflect.getMetadata('middleware', target.prototype, key);
         const handle = target.prototype[key];
         // 这里借助遍历生成相应的路由，并对应关联的路由回调处理
         if(pathData && method && handle) {
             // 获取到绑定到路由方法上的请求类型，生成相应请求方法的路由
-            router[method](pathData, handle);
+            if(middleware) {
+                router[method](pathData, middleware, handle);
+            } else {
+                router[method](pathData, handle);
+            }
         }
     }
 }

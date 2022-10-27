@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import cookieSession from 'cookie-session';
 // 引入控制器，完成类的编译执行，生成相应的路径控制
 import './controller/LoginController';
+import './controller/CrowllerController';
 
 const app = express();
 const bodyParseMiddleware = bodyParser.urlencoded({ extended: false });
