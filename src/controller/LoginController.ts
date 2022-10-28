@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import {Request, Response} from 'express';
 import {isLogin, formatResponse} from '../utils/util';
-import {controller, get, post} from './decorators';
+import {controller, get, post} from '../decorators/index';
 import {RES_STATUS} from '../config/responseStatus';
 
 export interface RequestWithBody extends Request{
@@ -13,7 +13,7 @@ export interface RequestWithBody extends Request{
 @controller
 class LoginController {
     @get('/')
-    home(req: Request, res: Response) {
+    home(req: Request, res: Response):void {
         if(isLogin(req)) {
             res.send(`
                 <html>
@@ -39,7 +39,7 @@ class LoginController {
     };
 
     @get('/logout')
-    logout(req: RequestWithBody, res: Response) {
+    logout(req: RequestWithBody, res: Response):void {
         if(req.session) {
             req.session.loginStatus = false;
         };
@@ -48,7 +48,7 @@ class LoginController {
     };
 
     @post('/login')
-    login(req: RequestWithBody, res: Response) {
+    login(req: RequestWithBody, res: Response):void {
         // body需要用body-parse中间件进行解析，保证始终有body字段
         const {password} = req.body;
         if(isLogin(req)) {

@@ -3,7 +3,7 @@ import path from 'path';
 import 'reflect-metadata';
 import {Request, Response, NextFunction} from 'express';
 import {isLogin, formatResponse} from '../utils/util';
-import {controller, get, useMiddleware} from './decorators';
+import {controller, get, useMiddleware} from '../decorators/index';
 import {RES_STATUS} from '../config/responseStatus';
 import Crowller from '../utils/crowller';
 import Analyer from '../utils/analyer';
@@ -16,7 +16,7 @@ export interface RequestWithBody extends Request{
 }
 
 // 登录态的校验中间件
-const logStatusCheckMiddleware = (req: Request, res: Response, next: NextFunction) => {
+const logStatusCheckMiddleware = (req: Request, res: Response, next: NextFunction): void => {
     // 如果已经登录，接着执行后续回调
     if(isLogin(req)) {
         next();
@@ -30,7 +30,7 @@ const logStatusCheckMiddleware = (req: Request, res: Response, next: NextFunctio
 class CrowllerController {
     @get('/getData')
     @useMiddleware(logStatusCheckMiddleware)
-    getData(req: Request, res: Response) {
+    getData(req: Request, res: Response):void {
         // 创建爬虫类触发爬虫的数据获取
         // 网页key
         const key = 'x3b174jsx';
@@ -44,7 +44,7 @@ class CrowllerController {
 
     @get('/showData')
     @useMiddleware(logStatusCheckMiddleware)
-    showData(req: RequestWithBody, res: Response) {
+    showData(req: RequestWithBody, res: Response):void {
          // 避免course.json文件没有创建报错
         try {
             const dataPath = path.resolve(__dirname, '../../data/course.json');

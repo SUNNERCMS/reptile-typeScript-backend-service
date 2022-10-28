@@ -1,5 +1,5 @@
 import express, {Request, Response, NextFunction} from 'express';
-import {router} from './controller/decorators';
+import router from './router';
 import bodyParser from 'body-parser';
 import cookieSession from 'cookie-session';
 // 引入控制器，完成类的编译执行，生成相应的路径控制

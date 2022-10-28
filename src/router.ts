@@ -1,5 +1,12 @@
 // 文件废除，路由的生成已经通过controller文件中的装饰器和生成器，进行的路由的生成和替换
 
+import { Router } from "express";
+
+const router = Router();
+
+export default router;
+
+
 // import fs from 'fs';
 // import path from 'path';
 // import {Router, Request, Response, NextFunction} from 'express';
