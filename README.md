@@ -1,5 +1,5 @@
-# reptile-typeScript-project
-基于typeScript实现爬虫开发
+# reptile-typeScript-backend-service
+基于typeScript+express的爬虫后端服务
 
 ## v1: 爬虫流程整体实现
 ##### 1、Crowller爬虫类主要构成：
