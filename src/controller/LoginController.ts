@@ -20,7 +20,7 @@ class LoginController {
                     <body>
                         <a href='./getData'>爬取数据</a>
                         <a href='./showData'>展示内容</a>
-                        <a href='./logout'>退出</a>
+                        <a href='./api/logout'>退出</a>
                     </body>
                 </html>
             `);
@@ -28,7 +28,7 @@ class LoginController {
             res.send(`
                 <html>
                     <body>
-                        <form method="post" action="/login">
+                        <form method="post" action="/api/login">
                             <input type="password" name="password"/>
                             <button>登录</button>
                         </form>
@@ -38,16 +38,26 @@ class LoginController {
         }
     };
 
-    @get('/logout')
+    @get('/api/isLogin')
+    isLoginCheck(req: RequestWithBody, res: Response):void {
+        console.log('/api/isLogin');
+        const isLoginStatus = isLogin(req);
+        const resPonseStatus = isLoginStatus ? RES_STATUS.SUCCESS : RES_STATUS.HAD_LOGIN;
+        res.json(formatResponse(isLoginStatus, resPonseStatus));
+    };
+
+    @get('/api/logout')
     logout(req: RequestWithBody, res: Response):void {
         if(req.session) {
             req.session.loginStatus = false;
+            // 成功退出
+            res.json(formatResponse(true, RES_STATUS.SUCCESS));
         };
         // 退出登录之后，回到根路径页面
         res.redirect('/');
     };
 
-    @post('/login')
+    @post('/api/login')
     login(req: RequestWithBody, res: Response):void {
         // body需要用body-parse中间件进行解析，保证始终有body字段
         const {password} = req.body;
@@ -58,7 +68,7 @@ class LoginController {
                 req.session.loginStatus = true;
                 res.json(formatResponse({}, RES_STATUS.SUCCESS));
             } else {
-                res.json(formatResponse({}, RES_STATUS.FAIL, '登录失败'));
+                res.json(formatResponse({}, RES_STATUS.FAIL, '密码不正确'));
             }
         }
     };
