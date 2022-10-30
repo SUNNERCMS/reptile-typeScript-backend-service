@@ -28,7 +28,7 @@ const logStatusCheckMiddleware = (req: Request, res: Response, next: NextFunctio
 // 可以通过面向对象进行改造：将路径通过装饰器绑定到相应的执行函数上
 @controller
 class CrowllerController {
-    @get('/getData')
+    @get('/api/getData')
     @useMiddleware(logStatusCheckMiddleware)
     getData(req: Request, res: Response):void {
         // 创建爬虫类触发爬虫的数据获取
@@ -42,7 +42,7 @@ class CrowllerController {
         res.json(formatResponse({}, RES_STATUS.SUCCESS, ''));
     };
 
-    @get('/showData')
+    @get('/api/showData')
     @useMiddleware(logStatusCheckMiddleware)
     showData(req: RequestWithBody, res: Response):void {
          // 避免course.json文件没有创建报错

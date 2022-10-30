@@ -18,8 +18,8 @@ class LoginController {
             res.send(`
                 <html>
                     <body>
-                        <a href='./getData'>爬取数据</a>
-                        <a href='./showData'>展示内容</a>
+                        <a href='./api/getData'>爬取数据</a>
+                        <a href='./api/showData'>展示内容</a>
                         <a href='./api/logout'>退出</a>
                     </body>
                 </html>
