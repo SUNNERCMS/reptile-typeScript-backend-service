@@ -7,8 +7,6 @@ import {controller, get, useMiddleware} from '../decorators/index';
 import {RES_STATUS} from '../config/responseStatus';
 import Crowller from '../utils/crowller';
 import Analyer from '../utils/analyer';
-
-
 export interface RequestWithBody extends Request{
     body: {
         [key: string]: string | undefined
@@ -39,7 +37,7 @@ class CrowllerController {
         // 获取分析器实例
         const analyer = Analyer.getInstance();
         new Crowller(analyer, url);
-        res.json(formatResponse({}, RES_STATUS.SUCCESS, ''));
+        res.json(formatResponse<ResponseResult.getData>({}, RES_STATUS.SUCCESS, ''));
     };
 
     @get('/api/showData')
@@ -49,9 +47,10 @@ class CrowllerController {
         try {
             const dataPath = path.resolve(__dirname, '../../data/course.json');
             const courseData = fs.readFileSync(dataPath, 'utf-8');
-            res.json(formatResponse(JSON.parse(courseData), RES_STATUS.SUCCESS));
+            const responseData = formatResponse<ResponseResult.showData>(JSON.parse(courseData), RES_STATUS.SUCCESS);
+            res.json(responseData);
         } catch {
-            res.json(formatResponse({}, RES_STATUS.OTHER, '暂获取不到数据'));
+            res.json(formatResponse<ResponseResult.showData>({}, RES_STATUS.OTHER, '暂获取不到数据'));
         }
     };
 }

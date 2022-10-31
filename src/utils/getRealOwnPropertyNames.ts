@@ -11,6 +11,5 @@ interface ClassWithConstructor {
 export const getRealOwnPropertyNames = (classTarget: ClassWithConstructor): string[] => {
     const classPropertyNames = Object.getOwnPropertyNames(classTarget.prototype);
     const realOwnPropertyNames =  classPropertyNames.filter((itemName: string) => itemName !== 'constructor');
-    console.log('realOwnPropertyNames--', classTarget, classPropertyNames, realOwnPropertyNames);
     return realOwnPropertyNames;
 }

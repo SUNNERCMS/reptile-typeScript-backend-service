@@ -1071,3 +1071,75 @@ export const controller = (target: any) => {
     }
 }
 ```
+## v15: 类型注解完善
+##### v15-1 通过泛型完善响应数据类型注解
+接口响应数据的类型注解，可以根据传入的数据类型，通过泛型给响应方法传入，给方法入参和出参添加类型注解。
+```js
+// 完善之前data的数据类型为any
+interface Result {
+    status: number,
+    errMeg?: string,
+    data: any
+}
+
+export const formatResponse = (data: any, status: number, errMeg?: string): Result => {
+    return {
+        status,
+        errMeg,
+        data
+    }
+}
+......
+res.json(formatResponse(true, RES_STATUS.SUCCESS));
+
+// 完善后data的数据类型，由调用给方法时明确传入
+interface Result<T>{
+    status: number,
+    errMeg?: string,
+    data: T
+}
+export const formatResponse = <T>(data: T, status: number, errMeg?: string): Result<T> => {
+    return {
+        status,
+        errMeg,
+        data
+    }
+}
+......
+res.json(formatResponse<boolean>(true, RES_STATUS.SUCCESS));
+```
+
+##### v15-2 定义responseResult.d.ts文件统一维护数据响应的类型注解
+创建文件维护响应类型注解，可以在该文件中看到所有有关响应的注解，同时也可以与前端共用一份这个文件，因为前端相应的也有响应数据的使用。
+```js
+declare namespace ResponseResult{
+
+    interface CourseItem {
+        title: string;
+        count: number;
+    }
+    interface ResData {
+        [key: string]: CourseItem[]
+    }
+
+    type getData = object;
+    type showData = ResData | object;
+    type isLoginCheck = boolean;
+    type logout = boolean;
+    type login = object;
+}
+```
+从注解文件中获取相对应的类型注解
+```js
+  showData(req: RequestWithBody, res: Response):void {
+         // 避免course.json文件没有创建报错
+        try {
+            const dataPath = path.resolve(__dirname, '../../data/course.json');
+            const courseData = fs.readFileSync(dataPath, 'utf-8');
+            const responseData = formatResponse<ResponseResult.showData>(JSON.parse(courseData), RES_STATUS.SUCCESS);
+            res.json(responseData);
+        } catch {
+            res.json(formatResponse<ResponseResult.showData>({}, RES_STATUS.OTHER, '暂获取不到数据'));
+        }
+    };
+```

@@ -1,9 +1,9 @@
 import {RequestWithBody} from '../controller/CrowllerController';
 
-interface Result {
+interface Result<T>{
     status: number,
     errMeg?: string,
-    data: any
+    data: T
 }
 
 export const isLogin = (req: RequestWithBody): boolean => {
@@ -12,7 +12,7 @@ export const isLogin = (req: RequestWithBody): boolean => {
 }
 
 // 格式化接口数据结构
-export const formatResponse = (data: any, status: number, errMeg?: string): Result => {
+export const formatResponse = <T>(data: T, status: number, errMeg?: string): Result<T> => {
     return {
         status,
         errMeg,

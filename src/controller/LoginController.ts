@@ -43,7 +43,8 @@ class LoginController {
         console.log('/api/isLogin');
         const isLoginStatus = isLogin(req);
         const resPonseStatus = isLoginStatus ? RES_STATUS.SUCCESS : RES_STATUS.HAD_LOGIN;
-        res.json(formatResponse(isLoginStatus, resPonseStatus));
+        const response = formatResponse<ResponseResult.isLoginCheck>(isLoginStatus, resPonseStatus);
+        res.json(response);
     };
 
     @get('/api/logout')
@@ -51,7 +52,7 @@ class LoginController {
         if(req.session) {
             req.session.loginStatus = false;
             // 成功退出
-            res.json(formatResponse(true, RES_STATUS.SUCCESS));
+            res.json(formatResponse<ResponseResult.logout>(true, RES_STATUS.SUCCESS));
         };
         // 退出登录之后，回到根路径页面
         res.redirect('/');
@@ -66,9 +67,9 @@ class LoginController {
         } else {
             if(password === '123' && req.session) {
                 req.session.loginStatus = true;
-                res.json(formatResponse({}, RES_STATUS.SUCCESS));
+                res.json(formatResponse<ResponseResult.login>({}, RES_STATUS.SUCCESS));
             } else {
-                res.json(formatResponse({}, RES_STATUS.FAIL, '密码不正确'));
+                res.json(formatResponse<ResponseResult.login>({}, RES_STATUS.FAIL, '密码不正确'));
             }
         }
     };

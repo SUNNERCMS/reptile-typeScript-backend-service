@@ -5,6 +5,7 @@
     "./src/index.ts",
     "./src/router.ts",
     "./src/custom.d.ts",
+    "./src/responseResult.d.ts",
     "src/utils/util.ts",
     "src/utils/getRealOwnPropertyNames.ts",
     "src/demoLearn/classDecorator.ts",
